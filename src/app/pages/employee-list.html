@@ -1,0 +1,133 @@
+<header class="page-header">
+  <div>
+    <h1>Daftar karyawan</h1>
+    <p>{{ totalEmployees() }} karyawan dalam direktori demo</p>
+  </div>
+  <a class="button primary" routerLink="/employees/new" queryParamsHandling="preserve">
+    <span class="plus-icon" aria-hidden="true"></span>Tambah karyawan
+  </a>
+</header>
+
+<section class="list-panel" aria-label="Daftar dan pencarian karyawan">
+  <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <div class="field">
+      <label for="name-filter">Nama atau username</label>
+      <input id="name-filter" type="search" formControlName="name" placeholder="Cari nama karyawan">
+    </div>
+    <div class="field">
+      <label for="group-filter">Grup</label>
+      <select id="group-filter" formControlName="group">
+        <option value="">Semua grup</option>
+        @for (group of groups; track group) {
+          <option [value]="group">{{ group }}</option>
+        }
+      </select>
+    </div>
+    <div class="filter-actions">
+      <button class="button secondary" type="submit">Cari</button>
+      <button class="button text-button" type="button" (click)="clearFilters()">Reset</button>
+    </div>
+  </form>
+
+  <div class="mobile-sort">
+    <div class="field">
+      <label for="mobile-sort">Urutkan</label>
+      <select id="mobile-sort" #mobileSort (change)="changeMobileSort(mobileSort.value)">
+        <option value="" [selected]="!sort()">Urutan awal</option>
+        @for (column of columns; track column.key) {
+          <option [value]="column.key + ':asc'" [selected]="directionFor(column.key) === 'ascending'">
+            {{ column.label }} A–Z
+          </option>
+          <option [value]="column.key + ':desc'" [selected]="directionFor(column.key) === 'descending'">
+            {{ column.label }} Z–A
+          </option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <table class="employee-table">
+    <thead>
+      <tr>
+        @for (column of columns; track column.key) {
+          <th scope="col" [class.mobile-hide]="column.key !== 'name'" [attr.aria-sort]="directionFor(column.key)">
+            <button class="sort-button" type="button" (click)="sortBy(column.key)">
+              {{ column.label }}
+              <span class="sort-icon" [attr.data-direction]="directionFor(column.key)" aria-hidden="true"></span>
+            </button>
+          </th>
+        }
+        <th scope="col">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (employee of rows(); track employee.id) {
+        <tr>
+          <td>
+            <div class="employee-cell">
+              <span class="employee-avatar" aria-hidden="true">
+                {{ employee.firstName[0] }}{{ employee.lastName[0] }}
+              </span>
+              <div class="employee-identity">
+                <a [routerLink]="['/employees', employee.id]" queryParamsHandling="preserve">
+                  {{ nameOf(employee) }}
+                </a>
+                <span class="employee-email">{{ employee.email }}</span>
+                <span class="mobile-meta">{{ employee.group }} · {{ employee.status }}</span>
+              </div>
+            </div>
+          </td>
+          <td class="mobile-hide">{{ employee.group }}</td>
+          <td class="mobile-hide">
+            <span class="status" [class.inactive]="employee.status !== 'Aktif'">{{ employee.status }}</span>
+          </td>
+          <td>
+            <div class="row-actions">
+              <button type="button" (click)="showAction('edit', employee)" [attr.aria-label]="'Edit ' + nameOf(employee)">Edit</button>
+              <button type="button" (click)="showAction('delete', employee)" [attr.aria-label]="'Delete ' + nameOf(employee)">Delete</button>
+            </div>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="4" class="empty-state">
+            <strong>Karyawan tidak ditemukan</strong>
+            <p>Ubah nama yang dicari atau pilih grup lain.</p>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <footer class="table-footer">
+    <p class="result-count" aria-live="polite">
+      @if (rows().length) {
+        {{ firstIndex() + 1 }}–{{ firstIndex() + rows().length }} dari {{ filteredEmployees().length }} karyawan
+      } @else {
+        0 karyawan
+      }
+    </p>
+    <label class="page-size">
+      <span>Baris per halaman</span>
+      <select #pageSizeSelect (change)="changePageSize(pageSizeSelect.value)">
+        @for (size of pageSizes; track size) {
+          <option [value]="size" [selected]="pageSize() === size">{{ size }}</option>
+        }
+      </select>
+    </label>
+    <nav class="pagination" aria-label="Halaman daftar karyawan">
+      <button class="button secondary" type="button" [disabled]="page() === 1" (click)="goToPage(page() - 1)">Sebelumnya</button>
+      <span>{{ page() }} / {{ pageCount() }}</span>
+      <button class="button secondary" type="button" [disabled]="page() === pageCount()" (click)="goToPage(page() + 1)">Berikutnya</button>
+    </nav>
+  </footer>
+</section>
+
+<div class="notification-area" aria-live="polite">
+  @if (notification(); as notice) {
+    <div class="notification" [class.delete-notification]="notice.action === 'delete'">
+      <p><strong>{{ notice.action === 'edit' ? 'Edit' : 'Delete' }} dipilih</strong><br>{{ notice.name }} · Simulasi</p>
+      <button class="button text-button" type="button" (click)="notification.set(null)">Tutup</button>
+    </div>
+  }
+</div>

@@ -1,0 +1,36 @@
+<section class="record-page">
+  <header class="page-header">
+    <div>
+      <h1>Detail karyawan</h1>
+      @if (employee(); as person) {
+        <p>{{ person.firstName }} {{ person.lastName }}</p>
+      }
+    </div>
+  </header>
+
+  @if (employee(); as person) {
+    <div class="record-panel">
+      <dl class="detail-grid">
+        <div><dt>Username</dt><dd>{{ person.username }}</dd></div>
+        <div><dt>Email</dt><dd>{{ person.email }}</dd></div>
+        <div><dt>Nama depan</dt><dd>{{ person.firstName }}</dd></div>
+        <div><dt>Nama belakang</dt><dd>{{ person.lastName }}</dd></div>
+        <div><dt>Tanggal lahir</dt><dd>{{ date.format(dateValue(person.birthDate)) }}</dd></div>
+        <div><dt>Gaji pokok</dt><dd class="numeric">{{ currency.format(person.basicSalary) }}</dd></div>
+        <div><dt>Status</dt><dd><span class="status" [class.inactive]="person.status !== 'Aktif'">{{ person.status }}</span></dd></div>
+        <div><dt>Grup</dt><dd>{{ person.group }}</dd></div>
+        <div><dt>Deskripsi</dt><dd>{{ dateTime.format(dateValue(person.description)) }}</dd></div>
+      </dl>
+      <footer class="record-actions">
+        <a class="button primary" routerLink="/employees" queryParamsHandling="preserve">OK</a>
+      </footer>
+    </div>
+  } @else {
+    <div class="record-panel">
+      <p class="record-message">Data karyawan tidak ditemukan.</p>
+      <footer class="record-actions">
+        <a class="button primary" routerLink="/employees" queryParamsHandling="preserve">Kembali ke daftar</a>
+      </footer>
+    </div>
+  }
+</section>

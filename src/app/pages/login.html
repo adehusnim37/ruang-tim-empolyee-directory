@@ -1,0 +1,40 @@
+<main class="login-layout">
+  <section class="login-brand" aria-label="Ruang Tim">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span>Ruang Tim</span>
+    </div>
+    <div class="login-intro">
+      <p class="login-display">Direktori <br>karyawan.</p>
+      <p>Cari, lihat, dan tambahkan data karyawan dari satu tempat.</p>
+    </div>
+  </section>
+
+  <section class="login-content" aria-labelledby="login-title">
+    <div class="login-panel">
+      <h1 id="login-title">Masuk</h1>
+      <p>Gunakan akun demo untuk membuka direktori.</p>
+
+      <form class="login-form" [formGroup]="form" (ngSubmit)="signIn()" (input)="error.set('')">
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" formControlName="username" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="password">Kata sandi</label>
+          <input id="password" type="password" formControlName="password" autocomplete="current-password" required>
+        </div>
+
+        @if (error()) {
+          <p class="form-error" role="alert">{{ error() }}</p>
+        }
+        <button class="button primary" type="submit">Masuk</button>
+      </form>
+
+      <dl class="demo-credentials">
+        <div><dt>Username demo</dt><dd>{{ demo.username }}</dd></div>
+        <div><dt>Kata sandi demo</dt><dd>{{ demo.password }}</dd></div>
+      </dl>
+    </div>
+  </section>
+</main>

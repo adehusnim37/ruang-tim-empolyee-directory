@@ -1,0 +1,124 @@
+<section class="record-page">
+  <header class="page-header">
+    <div>
+      <h1>Tambah karyawan</h1>
+      <p>Semua kolom wajib diisi.</p>
+    </div>
+  </header>
+
+  <form class="record-panel" [formGroup]="form" (ngSubmit)="save()" (input)="formError.set('')">
+    <fieldset class="form-section">
+      <legend>Identitas</legend>
+      <div class="form-grid">
+        <div class="field">
+          <label for="employee-first-name">Nama depan</label>
+          <input id="employee-first-name" formControlName="firstName" required
+            [attr.aria-invalid]="invalid('firstName')" [attr.aria-describedby]="invalid('firstName') ? 'first-name-error' : null">
+          @if (invalid('firstName')) {
+            <p class="field-error" id="first-name-error">Masukkan nama depan.</p>
+          }
+        </div>
+        <div class="field">
+          <label for="employee-last-name">Nama belakang</label>
+          <input id="employee-last-name" formControlName="lastName" required
+            [attr.aria-invalid]="invalid('lastName')" [attr.aria-describedby]="invalid('lastName') ? 'last-name-error' : null">
+          @if (invalid('lastName')) {
+            <p class="field-error" id="last-name-error">Masukkan nama belakang.</p>
+          }
+        </div>
+        <div class="field">
+          <label for="employee-username">Username</label>
+          <input id="employee-username" formControlName="username" autocomplete="off" spellcheck="false" required
+            [attr.aria-invalid]="invalid('username')" [attr.aria-describedby]="invalid('username') ? 'username-error' : null">
+          @if (invalid('username')) {
+            <p class="field-error" id="username-error">Masukkan username.</p>
+          }
+        </div>
+        <div class="field">
+          <label for="employee-email">Email</label>
+          <input id="employee-email" type="email" formControlName="email" required
+            [attr.aria-invalid]="invalid('email')" [attr.aria-describedby]="invalid('email') ? 'email-error' : null">
+          @if (invalid('email')) {
+            <p class="field-error" id="email-error">Masukkan email yang valid, misalnya nama&#64;example.com.</p>
+          }
+        </div>
+        <div class="field">
+          <label for="employee-birth-date">Tanggal lahir</label>
+          <input id="employee-birth-date" type="datetime-local" formControlName="birthDate" [max]="lastBirthDate" required
+            [attr.aria-invalid]="invalid('birthDate')" [attr.aria-describedby]="invalid('birthDate') ? 'birth-date-error' : null">
+          @if (invalid('birthDate')) {
+            <p class="field-error" id="birth-date-error">
+              {{ form.controls.birthDate.hasError('futureDate') ? 'Pilih tanggal lahir hari ini atau sebelumnya.' : 'Masukkan tanggal lahir.' }}
+            </p>
+          }
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="form-section">
+      <legend>Kepegawaian</legend>
+      <div class="form-grid">
+        <div class="field">
+          <label for="employee-salary">Gaji pokok (Rp)</label>
+          <input id="employee-salary" type="number" formControlName="basicSalary" min="0" step="any" inputmode="decimal" required
+            [attr.aria-invalid]="invalid('basicSalary')" [attr.aria-describedby]="invalid('basicSalary') ? 'salary-error' : null">
+          @if (invalid('basicSalary')) {
+            <p class="field-error" id="salary-error">Masukkan gaji pokok berupa angka, minimal 0.</p>
+          }
+        </div>
+        <div class="field">
+          <label for="employee-status">Status</label>
+          <select id="employee-status" formControlName="status" required
+            [attr.aria-invalid]="invalid('status')" [attr.aria-describedby]="invalid('status') ? 'status-error' : null">
+            <option value="" disabled>Pilih status</option>
+            @for (status of statuses; track status) {
+              <option [value]="status">{{ status }}</option>
+            }
+          </select>
+          @if (invalid('status')) {
+            <p class="field-error" id="status-error">Pilih status.</p>
+          }
+        </div>
+        <div class="group-field">
+          <div class="field">
+            <label for="employee-group-search">Cari grup</label>
+            <input id="employee-group-search" type="search" placeholder="Ketik nama grup"
+              #groupSearchInput (input)="groupSearch.set(groupSearchInput.value)">
+          </div>
+          @if (!matchingGroups.length) {
+            <p class="field-hint" role="status">Tidak ada grup yang cocok.</p>
+          }
+          <div class="field">
+            <label for="employee-group">Grup</label>
+            <select id="employee-group" formControlName="group" required
+              [attr.aria-invalid]="invalid('group')" [attr.aria-describedby]="invalid('group') ? 'group-error' : null">
+              <option value="" disabled>Pilih grup</option>
+              @for (group of visibleGroups; track group) {
+                <option [value]="group">{{ group }}</option>
+              }
+            </select>
+            @if (invalid('group')) {
+              <p class="field-error" id="group-error">Pilih grup.</p>
+            }
+          </div>
+        </div>
+        <div class="field">
+          <label for="employee-description">Deskripsi (tanggal dan waktu)</label>
+          <input id="employee-description" type="datetime-local" formControlName="description" required
+            [attr.aria-invalid]="invalid('description')" [attr.aria-describedby]="invalid('description') ? 'description-error' : null">
+          @if (invalid('description')) {
+            <p class="field-error" id="description-error">Masukkan tanggal dan waktu deskripsi.</p>
+          }
+        </div>
+      </div>
+    </fieldset>
+
+    @if (formError()) {
+      <p class="form-error record-error" role="alert">{{ formError() }}</p>
+    }
+    <footer class="record-actions">
+      <a class="button secondary" routerLink="/employees" queryParamsHandling="preserve">Batal</a>
+      <button class="button primary" type="submit">Simpan karyawan</button>
+    </footer>
+  </form>
+</section>
